@@ -39,7 +39,7 @@ private static void StoreLocalValuesInArrays() {
   /*Double pass*/
   int index = 0;
   var name = RandomString(5);
-  string tmpArray = $"double[] {name} = {{ ";
+  string tmpArray = $"double[] {name} = { { ";
 
   for (int i = 0; i < obedCode.Length; i++) {
       var currentLine = obedCode[i].Replace(";", " ").Replace("(", " ").Replace(")", " ").Replace("{", " ").Replace("}", " ");
@@ -162,7 +162,7 @@ private static void ObfuscateStrings() {
         encodingPass.Add($"{string_name} += (char){array_name}[currentChar];");
         decodingPass.Add($"{string_name} += (char){array_name}[currentChar];");
 
-        string intarray = $"int[] {array_name} = {{ ";
+        string intarray = $"int[] {array_name} = { { ";
         foreach (var item in str) {
             intarray += (int)item + ",";
         }
@@ -173,15 +173,15 @@ private static void ObfuscateStrings() {
         string pass = $@"
             string {string_name} = """";
             {intarray}
-            for (int currentChar = 0; currentChar < {array_name}.Length; currentChar++) {{
+            for (int currentChar = 0; currentChar < {array_name}.Length; currentChar++) { {
                 {string.Join(Environment.NewLine, encodingPass.ToArray())}
-            }}
+            } }
         ";
         char[] r1 = eval.EvaluateString(pass, string_name);
 
 
         string charsStr = new string(r1);
-        intarray = $"int[] {array_name} = {{ ";
+        intarray = $"int[] {array_name} = { { ";
         foreach (var item in charsStr) {
             intarray += (int)item + ",";
         }
@@ -191,9 +191,9 @@ private static void ObfuscateStrings() {
         pass = $@"
             string {string_name} = """";
             {intarray}
-            for (int currentChar = 0; currentChar < {array_name}.Length; currentChar++) {{
+            for (int currentChar = 0; currentChar < {array_name}.Length; currentChar++) { {
                 {string.Join(Environment.NewLine, decodingPass.ToArray())}
-            }}
+            } }
         ";
 
 
