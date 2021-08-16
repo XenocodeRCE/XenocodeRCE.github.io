@@ -11,7 +11,7 @@ But he still refused to understand, so what to do ? Make a java source code obfu
 *note : I will not handle Renaming obfuscation, this blog post serves as a PoC exactly like the last one*
 
 
-# The features
+## The features :
 
 
 ### Extract every double value from the methods and store them in an array
@@ -353,4 +353,83 @@ public static int method(int param) {
 ```
 
 
-This is 11pm now, tomorrow i will cover the `Change linear code execution flow to nonlinear version` and then we will be done 
+### Change linear code execution flow to nonlinear version
+
+
+This obfuscation techniques is also relatively simple :
+
+- declare all variables in another scope
+- parse the remaining blocks
+- foreach block, gives it a random index, insert it in a `case` statement and call the next one using its index
+
+Here is our testing code : 
+
+```java
+int a = 1;
+int b = a + 2;
+int c = 0;
+System.out.println(""This dude is massive"");
+if (b > 3){
+return c;
+}
+return 4;
+```
+
+This exemple has both if branches, integer variables and calls ! 
+
+
+Check the sourcecode [here](https://gist.github.com/XenocodeRCE/a4af8afbbcb9ffb11f4ee8d8dbc68c70#file-jconfuse-poc-jva-obfuscator-cs-L75) if you want to have a look, syntax will be messed because of how Jekyll handes double {} ! 
+
+But here is the result :
+
+```java
+int a = 0;
+int b = 0;
+int c = 0;
+int JGUVBS = 0;
+JGUVBS = 109;
+while (JGUVBS != 281035) {
+  switch (JGUVBS) {
+
+  case 109:
+    a = 1;
+    JGUVBS = 29;
+    break;
+
+  case 29:
+    b = a + 2;
+    JGUVBS = 45;
+    break;
+
+  case 45:
+    c = 0;
+    JGUVBS = 7;
+    break;
+
+  case 7:
+    System.out.println("This dude is massive");
+    JGUVBS = 87;
+    break;
+
+  case 87:
+    if (b > 3) {
+      JGUVBS = 281035;
+      break;
+
+    }
+  }
+return 4;
+```
+
+Which is pretty simple but really similar to what JObfuscator has to offer.
+
+Few suggestions ? Instead of setting the index value with `=` we could substract nextIndex with currentIndex and instead uses `+=` or `-=` 🙂
+
+
+### End notes
+
+Well this all started as a fun game, I did 2 PoC : first I made a very simple deobfuscator then I made this very simple obfuscator. This is PoC, not commercial-standard codes nor anything, if any, this is just sloppy code that works, barely. But if I can do it, everyone can do it, so don't spend money on software such as JObfuscator. 
+
+Think about it twice : would you pay to get an activation key that would allow you to send your source code over a SaaS owned by a psycho that insults anyone on the internet ? I know you would not.
+
+Also as a challenge for anyone reading this, fork my code and add a proper renamer for instance, or something cool that few source code obfuscation has to offer !
